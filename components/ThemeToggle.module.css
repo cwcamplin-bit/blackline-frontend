@@ -1,0 +1,56 @@
+/* Same iOS-style track/thumb switch as the Account page's Appearance
+   panel — extracted here so it can be dropped into any nav bar (marketing
+   page, login/signup) without duplicating the markup/styles. */
+.themeSwitch {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.tsTrack {
+  display: block;
+  width: 44px;
+  height: 24px;
+  border-radius: 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  position: relative;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.tsThumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #151206;
+  transition: transform 0.25s ease, background 0.2s ease;
+}
+.tsThumb.light {
+  transform: translateX(20px);
+}
+.tsIcon {
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  transition: opacity 0.15s ease;
+}
+.tsIconMoon {
+  opacity: 1;
+}
+.tsIconSun {
+  opacity: 0;
+}
+.tsThumb.light .tsIconMoon {
+  opacity: 0;
+}
+.tsThumb.light .tsIconSun {
+  opacity: 1;
+}

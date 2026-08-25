@@ -1,0 +1,148 @@
+.appHeader {
+  margin-bottom: 28px;
+}
+.appHeader h1 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-top: 6px;
+}
+.sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 10px;
+  max-width: 560px;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.filterChip {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filterChip:hover {
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+.filterChip.active {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  background: var(--gold-soft);
+}
+
+.tableWrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dataTable th {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--panel-2);
+}
+.dataTable td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+.dataTable tr:last-child td {
+  border-bottom: none;
+}
+.hrow:hover td {
+  background: var(--panel-2);
+}
+.dtAddr {
+  font-family: var(--serif);
+  font-size: 15px;
+}
+.dtAddr small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text-faint);
+  font-weight: 400;
+  margin-top: 2px;
+}
+.monoCell {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.verdictCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.verdictDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dtLink {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dtLink:hover {
+  color: var(--gold-bright);
+}
+.dtActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.dtRemove {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.dtRemove:hover {
+  color: var(--red);
+}
+@media (max-width: 760px) {
+  .tableWrap {
+    overflow-x: auto;
+  }
+  .dataTable {
+    min-width: 640px;
+  }
+}
+
+.emptyNote {
+  text-align: center;
+  padding: 48px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-faint);
+}

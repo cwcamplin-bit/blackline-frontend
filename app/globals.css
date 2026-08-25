@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,380;9..144,500;9..144,600;9..144,680&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #0a0c0f;
+  --panel: #12151a;
+  --panel-2: #191d24;
+  --line: #262b33;
+  --line-soft: #1d2129;
+  --gold: #c9a227;
+  --gold-bright: #e4c34f;
+  --gold-soft: rgba(201, 162, 39, 0.14);
+  --teal: #3fa796;
+  --teal-soft: rgba(63, 167, 150, 0.14);
+  --amber: #c98a2b;
+  --red: #b9584f;
+  --text: #ecedef;
+  --text-muted: #939aa6;
+  --text-faint: #565d69;
+  --serif: 'Fraunces', serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --grain: rgba(255, 255, 255, 0.018);
+  /* Sticky nav-bar backdrop (marketing page + login/signup) — a
+     translucent version of --ink, kept as its own token rather than
+     computed with color-mix() so older browsers still get a solid,
+     theme-correct value. Was previously hardcoded as
+     rgba(10, 12, 15, 0.82) directly in each page's CSS, which meant the
+     nav bar stayed dark even when the rest of the page switched to light
+     mode. */
+  --nav-bg: rgba(10, 12, 15, 0.82);
+}
+
+:root[data-theme='light'] {
+  --ink: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f4f3f0;
+  --line: #e2e1dc;
+  --line-soft: #ecebe7;
+  --gold-bright: #a9790e;
+  --gold-soft: rgba(201, 162, 39, 0.12);
+  --text: #14161a;
+  --text-muted: #54585f;
+  --text-faint: #8a8e95;
+  --grain: rgba(0, 0, 0, 0.03);
+  --nav-bg: rgba(255, 255, 255, 0.82);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--grain) 0px,
+    var(--grain) 1px,
+    transparent 1px,
+    transparent 96px
+  );
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+/* ---------- Typography helpers (identical across every page) ---------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.eyebrow .el {
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+}
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.mono {
+  font-family: var(--mono);
+}
+
+/* ---------- Buttons (identical across every page) ---------- */
+.btn {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.btn-ghost {
+  color: var(--text-muted);
+  border-color: var(--line);
+  background: transparent;
+}
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+.btn-gold {
+  background: var(--gold);
+  color: #151206;
+}
+.btn-gold:hover {
+  background: var(--gold-bright);
+}
+
+/* ---------- Verdict dots (identical everywhere they appear) ---------- */
+.dot-strongbuy {
+  background: var(--teal);
+}
+.dot-buy {
+  background: #5fbf9f;
+}
+.dot-invest {
+  background: var(--gold);
+}
+.dot-caution {
+  background: var(--amber);
+}
+.dot-pass {
+  background: var(--red);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

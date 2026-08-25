@@ -1,0 +1,176 @@
+.appHeader {
+  margin-bottom: 32px;
+}
+.appHeader h1 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-top: 6px;
+}
+.appHeader .sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 10px;
+  max-width: 560px;
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line-soft);
+  border: 1px solid var(--line-soft);
+  margin-bottom: 36px;
+}
+@media (max-width: 760px) {
+  .statRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.statCard {
+  background: var(--ink);
+  padding: 22px;
+}
+.statCard .scNum {
+  font-family: var(--serif);
+  font-size: 30px;
+  color: var(--gold-bright);
+}
+.statCard .scLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panelBlock {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 26px;
+}
+.panelBlock h2 {
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+
+.tableWrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dataTable th {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--panel-2);
+}
+.dataTable td {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 13.5px;
+}
+.dataTable tr:last-child td {
+  border-bottom: none;
+}
+.dataTable tr:hover td {
+  background: var(--panel-2);
+}
+.dtAddr {
+  font-family: var(--serif);
+  font-size: 15px;
+}
+.monoCell {
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+.pos {
+  color: var(--teal);
+}
+.neg {
+  color: var(--red);
+}
+.statusTag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 2px;
+  display: inline-block;
+  letter-spacing: 0.03em;
+}
+.statusGood {
+  color: var(--teal);
+  border: 1px solid var(--teal);
+  background: var(--teal-soft);
+}
+.statusWarn {
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  background: rgba(201, 138, 43, 0.12);
+}
+@media (max-width: 760px) {
+  .tableWrap {
+    overflow-x: auto;
+  }
+  .dataTable {
+    min-width: 520px;
+  }
+}
+
+.insightRow {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.insightRow:last-child {
+  border-bottom: none;
+}
+.irMark {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  width: 22px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.irTitle {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.irBody {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.irMark.opp {
+  color: var(--teal);
+}
+.irMark.warn {
+  color: var(--red);
+}
+.irMark.info {
+  color: var(--gold);
+}

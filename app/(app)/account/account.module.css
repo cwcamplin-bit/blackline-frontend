@@ -1,0 +1,268 @@
+.main {
+  max-width: 900px;
+}
+.appHeader {
+  margin-bottom: 36px;
+}
+.appHeader h1 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-top: 6px;
+}
+.appHeader .sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 10px;
+  max-width: 560px;
+}
+
+.panelBlock {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.panelBlock h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.phSub {
+  font-size: 13px;
+  color: var(--text-faint);
+  margin-bottom: 22px;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 560px) {
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.field {
+  margin-bottom: 18px;
+}
+.field:last-child {
+  margin-bottom: 0;
+}
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus {
+  border-color: var(--gold);
+}
+.field input::placeholder {
+  color: var(--text-faint);
+}
+.formActions {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.formMsg {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--teal);
+}
+.formMsg.error {
+  color: var(--red);
+}
+
+.planCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, var(--gold-soft), var(--panel-2) 70%);
+  border-radius: 4px;
+  padding: 22px 24px;
+}
+.planName {
+  font-family: var(--serif);
+  font-size: 19px;
+  margin-bottom: 6px;
+}
+.planMeta {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.planUsage {
+  margin-top: 14px;
+}
+.usageTrack {
+  width: 220px;
+  height: 5px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.usageFill {
+  height: 100%;
+  background: var(--gold);
+  width: 60%;
+}
+.usageLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 6px;
+}
+
+.planNotice {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 3px;
+  background: var(--teal-soft);
+  border: 1px solid var(--teal);
+  color: var(--text);
+  font-size: 13px;
+}
+.planNotice.error {
+  background: rgba(185, 88, 79, 0.12);
+  border-color: var(--red);
+}
+.planUnlimited {
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--teal);
+}
+.upgradeButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .upgradeButtons {
+    align-items: stretch;
+    width: 100%;
+  }
+}
+.billingError {
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--red);
+}
+
+.dangerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  margin-top: 18px;
+}
+.dangerRow p {
+  font-size: 13px;
+  color: var(--text-faint);
+  max-width: 400px;
+}
+.btnDanger {
+  color: var(--red);
+  border-color: var(--line);
+  background: transparent;
+}
+.btnDanger:hover {
+  border-color: var(--red);
+}
+
+.themeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.trlTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.trlSub {
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+.themeSwitch {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tsTrack {
+  display: block;
+  width: 54px;
+  height: 30px;
+  border-radius: 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  position: relative;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.tsThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #151206;
+  transition: transform 0.25s ease, background 0.2s ease;
+}
+.tsThumb.light {
+  transform: translateX(24px);
+}
+.tsIcon {
+  width: 14px;
+  height: 14px;
+  position: absolute;
+  transition: opacity 0.15s ease;
+}
+.tsIconMoon {
+  opacity: 1;
+}
+.tsIconSun {
+  opacity: 0;
+}
+.tsThumb.light .tsIconMoon {
+  opacity: 0;
+}
+.tsThumb.light .tsIconSun {
+  opacity: 1;
+}

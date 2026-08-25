@@ -1,0 +1,333 @@
+.navHeader {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--nav-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .navInner {
+    padding: 16px 20px;
+  }
+}
+.wordmark {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: baseline;
+  text-decoration: none;
+}
+.wordmark .lined {
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 1px;
+  color: var(--gold-bright);
+}
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.navCta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.authShell {
+  min-height: calc(100vh - 65px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 900px) {
+  .authShell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.authBrand {
+  background: var(--panel);
+  border-right: 1px solid var(--line-soft);
+  padding: 64px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  .authBrand {
+    display: none;
+  }
+}
+.authBrand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(480px 320px at 100% 0%, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+.authBrandTeal::before {
+  background: radial-gradient(480px 320px at 100% 0%, var(--teal-soft), transparent 70%);
+}
+.authQuote {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.24;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+.authQuote .g {
+  color: var(--gold-bright);
+}
+
+.authStats {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+.authStat {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}
+.authStat .asNum {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--gold-bright);
+  flex-shrink: 0;
+  width: 76px;
+}
+.authStat .asLabel {
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.authChecklist {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+.authCheck {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.authCheck .acMark {
+  font-family: var(--mono);
+  color: var(--teal);
+  flex-shrink: 0;
+}
+.authCheck .acLabel {
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+.authCheck .acLabel b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.authFormWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 32px;
+}
+.authCard {
+  width: 100%;
+  max-width: 400px;
+}
+.authCard h2 {
+  font-size: clamp(26px, 3vw, 32px);
+  margin-bottom: 10px;
+}
+.authCard .sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-bottom: 36px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  padding: 13px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus {
+  border-color: var(--gold);
+}
+.field input::placeholder {
+  color: var(--text-faint);
+}
+.fieldHint {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 7px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.fieldRow .field {
+  margin-bottom: 0;
+  flex: 1;
+}
+.forgot {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 14px;
+  white-space: nowrap;
+  padding-top: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.forgot:hover {
+  color: var(--gold-bright);
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+.checkRow input {
+  margin-top: 3px;
+  accent-color: var(--gold);
+}
+.checkRow label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.checkRow a {
+  color: var(--gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.authSubmit {
+  width: 100%;
+  background: var(--gold);
+  color: #151206;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 14.5px;
+  padding: 14px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 6px;
+}
+.authSubmit:hover {
+  background: var(--gold-bright);
+}
+
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0;
+}
+.authDivider::before,
+.authDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-soft);
+}
+.authDivider span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.authSwitch {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+.authSwitch a {
+  color: var(--gold-bright);
+  text-decoration: none;
+  font-weight: 600;
+}
+.authSwitch a:hover {
+  text-decoration: underline;
+}
+
+.authMsg {
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--teal);
+  min-height: 16px;
+}
+.authMsg.error {
+  color: var(--red);
+}
+
+.pageFooter {
+  border-top: 1px solid var(--line-soft);
+  padding: 24px 32px;
+  text-align: center;
+}
+.pageFooter p {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+}

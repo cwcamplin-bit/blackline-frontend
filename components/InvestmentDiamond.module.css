@@ -1,0 +1,41 @@
+.diamond {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.dAxis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.dRing {
+  fill: none;
+  stroke: var(--line-soft);
+  stroke-width: 1;
+}
+.dPoly {
+  fill: var(--teal-soft);
+  stroke: var(--gold);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.dPoly.animateIn {
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+.dDot {
+  fill: var(--gold-bright);
+}
+.dLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  fill: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dNum {
+  font-family: var(--mono);
+  font-size: 17px;
+  fill: var(--text);
+  font-weight: 600;
+}
