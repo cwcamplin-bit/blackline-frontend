@@ -127,6 +127,10 @@ export interface UserPublic {
   // "past_due", "unpaid", ...) — null on the Free plan or once a
   // subscription is fully canceled. See the backend's UserPublic schema.
   subscriptionStatus: string | null;
+  // 'monthly' | 'annual' — which billing interval the current subscription
+  // is on. Null on the Free plan or once fully canceled, same as
+  // subscriptionStatus above.
+  subscriptionInterval: string | null;
   prefs: Record<string, unknown>;
 }
 

@@ -214,13 +214,19 @@ export async function addWatchlistMatch(watchlistName: string, data: AnalysisRes
  * its own ALLOWED_ORIGINS before handing them to Stripe. */
 
 export type PlanId = 'pro' | 'professional';
+export type BillingInterval = 'monthly' | 'annual';
 
-export async function createCheckoutSession(plan: PlanId, redirectTo: string): Promise<string> {
+export async function createCheckoutSession(
+  plan: PlanId,
+  interval: BillingInterval,
+  redirectTo: string
+): Promise<string> {
   const origin = window.location.origin;
   const { url } = await apiRequest<{ url: string }>('/api/billing/checkout', {
     method: 'POST',
     body: {
       plan,
+      interval,
       successUrl: `${origin}${redirectTo}?upgraded=1`,
       cancelUrl: `${origin}${redirectTo}`,
     },

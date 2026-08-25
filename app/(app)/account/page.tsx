@@ -1,15 +1,24 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
-import { ApiError, createBillingPortalSession, createCheckoutSession, type PlanId } from '@/lib/api';
+import { ApiError, createBillingPortalSession, type PlanId } from '@/lib/api';
 import styles from './account.module.css';
 
 const PLAN_LABELS: Record<string, string> = { free: 'Free', pro: 'Pro', professional: 'Professional' };
-const PLAN_PRICES: Record<PlanId, string> = { pro: '£29/mo', professional: '£99/mo' };
+// Only used for the *current, already-subscribed* plan's summary line below
+// (e.g. "£299/yr · billed annually") — the upgrade CTAs themselves show no
+// price at all now; that detail lives on /plans, which is also where the
+// interval toggle (monthly/annual) lives. Keep in sync with the /plans
+// page's own PLAN_PRICING and the backend README's Stripe setup steps.
+const PLAN_PRICES: Record<PlanId, { monthly: string; annual: string }> = {
+  pro: { monthly: '£29/mo', annual: '£299/yr' },
+  professional: { monthly: '£99/mo', annual: '£999/yr' },
+};
 // Statuses where the subscription is still considered "in force" — anything
 // else (past_due, unpaid, incomplete, canceled...) surfaces a billing
 // warning pointing at the Manage billing portal, since Stripe's own
@@ -70,7 +79,7 @@ function AccountPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [billingBusy, setBillingBusy] = useState<PlanId | 'portal' | null>(null);
+  const [billingBusy, setBillingBusy] = useState<'portal' | null>(null);
   const [billingError, setBillingError] = useState('');
   const [showUpgradeNotice, setShowUpgradeNotice] = useState(false);
 
@@ -106,20 +115,6 @@ function AccountPageContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-
-  async function handleUpgrade(plan: PlanId) {
-    setBillingError('');
-    setBillingBusy(plan);
-    try {
-      const url = await createCheckoutSession(plan, '/account');
-      window.location.href = url;
-    } catch (err) {
-      setBillingError(
-        err instanceof Error ? err.message : 'Could not start checkout. Please try again.'
-      );
-      setBillingBusy(null);
-    }
-  }
 
   async function handleManageBilling() {
     setBillingError('');
@@ -344,7 +339,11 @@ function AccountPageContent() {
           <div>
             <div className={styles.planName}>{PLAN_LABELS[user?.plan ?? 'free'] || user?.plan}</div>
             <div className={styles.planMeta}>
-              {user?.plan === 'free' ? 'FOR YOUR FIRST FEW DEALS' : `${PLAN_PRICES[user?.plan as PlanId]} · BILLED MONTHLY`}
+              {user?.plan === 'free'
+                ? 'FOR YOUR FIRST FEW DEALS'
+                : `${
+                    PLAN_PRICES[user?.plan as PlanId][user?.subscriptionInterval === 'annual' ? 'annual' : 'monthly']
+                  } · BILLED ${user?.subscriptionInterval === 'annual' ? 'ANNUALLY' : 'MONTHLY'}`}
             </div>
             {user?.plan === 'free' ? (
               <div className={styles.planUsage}>
@@ -360,32 +359,24 @@ function AccountPageContent() {
 
           {user?.plan === 'free' ? (
             <div className={styles.upgradeButtons}>
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={() => handleUpgrade('pro')}
-                disabled={billingBusy !== null}
-              >
-                {billingBusy === 'pro' ? 'Redirecting…' : `Upgrade to Pro — ${PLAN_PRICES.pro}`}
-              </button>
+              <Link href="/plans" className="btn btn-gold">
+                View plans &amp; upgrade →
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.upgradeButtons}>
               <button
                 type="button"
                 className="btn btn-gold"
-                onClick={() => handleUpgrade('professional')}
+                onClick={handleManageBilling}
                 disabled={billingBusy !== null}
               >
-                {billingBusy === 'professional' ? 'Redirecting…' : `Upgrade to Professional — ${PLAN_PRICES.professional}`}
+                {billingBusy === 'portal' ? 'Opening…' : 'Manage billing →'}
               </button>
+              <Link href="/plans" className="btn btn-ghost">
+                Compare plans
+              </Link>
             </div>
-          ) : (
-            <button
-              type="button"
-              className="btn btn-gold"
-              onClick={handleManageBilling}
-              disabled={billingBusy !== null}
-            >
-              {billingBusy === 'portal' ? 'Opening…' : 'Manage billing →'}
-            </button>
           )}
         </div>
 

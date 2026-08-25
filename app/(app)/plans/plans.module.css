@@ -1,0 +1,176 @@
+.main {
+  max-width: 1080px;
+}
+.appHeader {
+  margin-bottom: 30px;
+}
+.appHeader h1 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-top: 6px;
+}
+.appHeader .sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 10px;
+  max-width: 560px;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+.toggleLabel {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  transition: color 0.15s ease;
+}
+.toggleLabel.active {
+  color: var(--text);
+}
+.toggleSwitch {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tTrack {
+  display: block;
+  width: 54px;
+  height: 30px;
+  border-radius: 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  position: relative;
+}
+.tThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  transition: transform 0.25s ease;
+}
+.tThumb.annual {
+  transform: translateX(24px);
+}
+.saveBadge {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--teal);
+  background: var(--teal-soft);
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+  padding: 3px 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+.card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, var(--gold-soft), var(--panel) 65%);
+}
+.tierName {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.tierTag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  margin-bottom: 18px;
+}
+.tierDesc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.55;
+}
+.priceRow {
+  margin-bottom: 22px;
+}
+.priceVal {
+  font-family: var(--serif);
+  font-size: 32px;
+}
+.pricePeriod {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-left: 4px;
+}
+.priceNote {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--teal);
+  margin-top: 4px;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  flex-grow: 1;
+}
+.features li {
+  font-size: 13.5px;
+  color: var(--text);
+  padding: 7px 0;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid var(--line-soft);
+}
+.features li:first-child {
+  border-top: none;
+}
+.features li span {
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.currentBadge {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--teal);
+  text-align: center;
+  padding: 12px 0;
+  border: 1px solid var(--teal);
+  border-radius: 3px;
+  background: var(--teal-soft);
+}
+
+.errorMsg {
+  margin-top: 40px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--red);
+}
