@@ -9,6 +9,16 @@ export interface AuthPrefs {
   savedDemoSlugs: string[];
   hiddenDemoSaved: string[];
   hiddenDemoHistory: string[];
+  // An index signature, not just the three known keys above — this is a
+  // genuinely open bag server-side (`users.prefs` is a JSONB column, see
+  // the backend's UpdatePrefsRequest), and updatePrefs() in lib/api.ts
+  // takes a plain Record<string, unknown>. Without this, passing an
+  // AuthPrefs value there fails to type-check (an interface with only
+  // named properties isn't assignable to Record<string, unknown> even
+  // when every property is compatible) — a real error this sandbox's
+  // syntax-only checks couldn't catch, only surfaced by a real `next
+  // build`'s type-check.
+  [key: string]: unknown;
 }
 
 const EMPTY_PREFS: AuthPrefs = { savedDemoSlugs: [], hiddenDemoSaved: [], hiddenDemoHistory: [] };
