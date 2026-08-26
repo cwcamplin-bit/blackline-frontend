@@ -28,8 +28,15 @@ const WATCHLIST_STATIC_MATCH_LABEL: Record<(typeof WATCHLIST_NAMES)[number], str
   'Sub-£150k BRRR Candidates': 'No new matches',
 };
 
-function fmtPrice(n: number) {
-  return '£' + n.toLocaleString('en-GB');
+// Guards against undefined/non-number input — a saved property's `data` is
+// whatever an /api/analyze response looked like at the time it was saved,
+// which isn't re-validated against the current AnalysisResult shape on the
+// way back out of the database, so a missing/malformed `price` here must
+// render as "—" rather than crash the whole page (this was the actual bug:
+// an unguarded call below threw "Cannot read properties of undefined
+// (reading 'toLocaleString')" and took down the entire Saved page).
+function fmtPrice(n: number | undefined | null): string {
+  return typeof n === 'number' ? '£' + n.toLocaleString('en-GB') : '—';
 }
 
 export default function SavedPage() {
