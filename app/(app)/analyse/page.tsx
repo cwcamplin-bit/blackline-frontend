@@ -10,7 +10,6 @@ import { useAuth } from '@/lib/auth';
 import { readPrefs, addSavedDemoSlug } from '@/lib/authPrefs';
 import { findDemoSlugBySourceUrl, PROPERTIES, type DemoSlug } from '@/lib/demoProperties';
 import { buildPrintableReport } from '@/lib/printableReport';
-import { WATCHLIST_NAMES } from '@/lib/watchlists';
 import { VERDICT_PILL_CLASS } from '@/lib/verdict';
 import type { AnalysisResult } from '@/lib/types';
 import InvestmentDiamond from '@/components/InvestmentDiamond';
@@ -41,6 +40,7 @@ function AnalysePageInner() {
   const [confWidth, setConfWidth] = useState('0%');
   const [actionMsg, setActionMsg] = useState('');
   const [wlPickerOpen, setWlPickerOpen] = useState(false);
+  const [watchlistNames, setWatchlistNames] = useState<string[]>([]);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
 
   const reportRef = useRef<HTMLDivElement>(null);
@@ -192,7 +192,17 @@ function AnalysePageInner() {
       setActionMsg('Log in to add properties to a watchlist.');
       return;
     }
-    setWlPickerOpen((v) => !v);
+    const opening = !wlPickerOpen;
+    setWlPickerOpen(opening);
+    if (opening) {
+      // Watchlists are user-created (Saved & Watchlists page) rather than a
+      // fixed list, so this is fetched fresh each time the picker opens
+      // instead of read from a hardcoded constant.
+      api
+        .listWatchlists()
+        .then((lists) => setWatchlistNames(lists.map((w) => w.name)))
+        .catch(() => setWatchlistNames([]));
+    }
   }
 
   async function handleWatchPick(name: string) {
@@ -291,11 +301,17 @@ function AnalysePageInner() {
               {wlPickerOpen && (
                 <div className={styles.wlPicker}>
                   <div className={styles.wlPickerTitle}>Add to which watchlist?</div>
-                  {WATCHLIST_NAMES.map((name) => (
-                    <button key={name} type="button" className={styles.wlPick} onClick={() => handleWatchPick(name)}>
-                      {name}
-                    </button>
-                  ))}
+                  {watchlistNames.length > 0 ? (
+                    watchlistNames.map((name) => (
+                      <button key={name} type="button" className={styles.wlPick} onClick={() => handleWatchPick(name)}>
+                        {name}
+                      </button>
+                    ))
+                  ) : (
+                    <Link href="/saved" className={styles.wlPick}>
+                      No watchlists yet — create one →
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

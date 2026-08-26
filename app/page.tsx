@@ -67,8 +67,6 @@ export default function LandingPage() {
   const [heroUrl, setHeroUrl] = useState('rightmove.co.uk/properties/154829201');
   const [heroNote, setHeroNote] = useState('No spreadsheet required. Works with Rightmove listings today, Zoopla next.');
   const [heroError, setHeroError] = useState(false);
-  const [waitlistEmail, setWaitlistEmail] = useState('');
-  const [waitlistMsg, setWaitlistMsg] = useState('');
 
   function handleHeroAnalyse() {
     if (!heroUrl.trim()) {
@@ -77,12 +75,6 @@ export default function LandingPage() {
       return;
     }
     router.push('/signup');
-  }
-
-  function handleWaitlistSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setWaitlistMsg("You're on the list — we'll be in touch before launch.");
-    setWaitlistEmail('');
   }
 
   return (
@@ -375,28 +367,32 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className={clsx(styles.priceCard, styles.pro)}>
-              <h3>Professional</h3>
-              <div className={styles.ptag}>FOR INVESTORS ANALYSING WEEKLY</div>
-              <div className={styles.pval}>Request access</div>
+              <h3>Pro</h3>
+              <div className={styles.ptag}>FOR ACTIVE INVESTORS</div>
+              <div className={styles.pval}>£29/mo</div>
               <ul>
                 <li>
                   <span>—</span>Unlimited property analyses
                 </li>
                 <li>
-                  <span>—</span>Full investment report
+                  <span>—</span>Saved properties &amp; full analysis history
                 </li>
                 <li>
-                  <span>—</span>Property comparison, side by side
+                  <span>—</span>Watchlists for tracking deals over time
                 </li>
                 <li>
-                  <span>—</span>First access to new premium capabilities
+                  <span>—</span>Everything in Free
                 </li>
               </ul>
-              <a href="#cta" className={clsx('btn', 'btn-gold', styles.priceCardBtn)}>
-                Join the waitlist
-              </a>
+              <Link href="/signup" className={clsx('btn', 'btn-gold', styles.priceCardBtn)}>
+                Start Pro →
+              </Link>
             </div>
           </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: 13.5, marginTop: 24, textAlign: 'center' }}>
+            Portfolio landlords and teams: Professional adds side-by-side comparison and priority support at £99/mo —
+            see the full comparison from your account once you&apos;ve signed up.
+          </p>
         </div>
       </Reveal>
 
@@ -408,18 +404,14 @@ export default function LandingPage() {
             <br />
             Just — <span className={styles.g}>&quot;have I run it through Blackline yet?&quot;</span>
           </blockquote>
-          <form className={styles.ctaForm} onSubmit={handleWaitlistSubmit}>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              aria-label="Email address"
-              value={waitlistEmail}
-              onChange={(e) => setWaitlistEmail(e.target.value)}
-            />
-            <button type="submit">Request access</button>
-          </form>
-          <div className={styles.ctaMsg}>{waitlistMsg}</div>
+          <div className={styles.ctaButtons}>
+            <Link href="/signup" className="btn btn-gold">
+              Start free →
+            </Link>
+            <Link href="/analyse" className="btn btn-ghost">
+              Try an analysis first
+            </Link>
+          </div>
         </div>
       </section>
 

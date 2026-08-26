@@ -227,8 +227,26 @@ export async function deleteHistory(sourceUrl: string): Promise<void> {
 
 /* ---------- Watchlists ---------- */
 
-export async function listWatchlists(): Promise<Record<string, import('./types').WatchlistMatch[]>> {
-  return apiRequest<Record<string, import('./types').WatchlistMatch[]>>('/api/watchlists');
+export async function listWatchlists(): Promise<import('./types').Watchlist[]> {
+  return apiRequest<import('./types').Watchlist[]>('/api/watchlists');
+}
+
+export async function createWatchlist(name: string, criteria: string[]): Promise<import('./types').Watchlist> {
+  return apiRequest<import('./types').Watchlist>('/api/watchlists', {
+    method: 'POST',
+    body: { name, criteria },
+  });
+}
+
+export async function updateWatchlist(
+  id: number,
+  changes: { name?: string; criteria?: string[] }
+): Promise<import('./types').Watchlist> {
+  return apiRequest<import('./types').Watchlist>(`/api/watchlists/${id}`, { method: 'PATCH', body: changes });
+}
+
+export async function deleteWatchlist(id: number): Promise<void> {
+  await apiRequest<{ ok: boolean }>(`/api/watchlists/${id}`, { method: 'DELETE' });
 }
 
 export async function addWatchlistMatch(watchlistName: string, data: AnalysisResult): Promise<void> {
@@ -236,6 +254,40 @@ export async function addWatchlistMatch(watchlistName: string, data: AnalysisRes
     method: 'POST',
     body: { watchlistName, data },
   });
+}
+
+/* ---------- Portfolio holdings ---------- */
+
+export interface CreateHoldingInput {
+  address: string;
+  purchasePrice: number;
+  currentValue: number;
+  mortgageBalance: number;
+  monthlyRent: number;
+  monthlyCosts: number;
+  purchasedAt?: string | null;
+  sourceUrl?: string | null;
+}
+
+export async function listPortfolioHoldings(): Promise<import('./types').PortfolioHolding[]> {
+  return apiRequest<import('./types').PortfolioHolding[]>('/api/portfolio');
+}
+
+export async function createPortfolioHolding(
+  input: CreateHoldingInput
+): Promise<import('./types').PortfolioHolding> {
+  return apiRequest<import('./types').PortfolioHolding>('/api/portfolio', { method: 'POST', body: input });
+}
+
+export async function updatePortfolioHolding(
+  id: number,
+  changes: Partial<CreateHoldingInput>
+): Promise<import('./types').PortfolioHolding> {
+  return apiRequest<import('./types').PortfolioHolding>(`/api/portfolio/${id}`, { method: 'PATCH', body: changes });
+}
+
+export async function deletePortfolioHolding(id: number): Promise<void> {
+  await apiRequest<{ ok: boolean }>(`/api/portfolio/${id}`, { method: 'DELETE' });
 }
 
 /* ---------- Billing (Stripe subscriptions) ----------

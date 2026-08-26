@@ -15,6 +15,7 @@ function initials(name: string): string {
 }
 
 const NAV_ITEMS = [
+  { href: '/dashboard', label: 'Overview' },
   { href: '/analyse', label: 'Analyse' },
   { href: '/history', label: 'History' },
   { href: '/saved', label: 'Saved & Watchlists' },

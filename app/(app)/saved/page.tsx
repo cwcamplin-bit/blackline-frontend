@@ -7,26 +7,14 @@ import { PROPERTIES, type DemoSlug } from '@/lib/demoProperties';
 import { useAuth } from '@/lib/auth';
 import * as api from '@/lib/api';
 import { readPrefs, removeSavedDemoSlug, hideDemoSaved as hideDemoSavedPref } from '@/lib/authPrefs';
-import { WATCHLIST_NAMES } from '@/lib/watchlists';
 import { VERDICT_DOT_CLASS, VERDICT_PILL_CLASS } from '@/lib/verdict';
-import type { WatchlistMatch } from '@/lib/types';
+import type { Watchlist } from '@/lib/types';
 import styles from './saved.module.css';
 
 // These four are always shown, matching the original prototype's always-on
 // demo cards; the other three demo listings only appear once "saved" from
 // a ?property= deep link on /analyse.
 const ALWAYS_VISIBLE_DEMO: DemoSlug[] = ['ashworth', 'corporation', 'riverside', 'kings'];
-
-const WATCHLIST_CHIPS: Record<(typeof WATCHLIST_NAMES)[number], string[]> = {
-  'Manchester Cash-Flow BTL': ['Yield > 6%', 'Under £250k', '3+ bed'],
-  'Leeds Regeneration Corridor': ['Growth focus', '3+ bed', 'Under £300k'],
-  'Sub-£150k BRRR Candidates': ['Value Add focus', 'Under £150k'],
-};
-const WATCHLIST_STATIC_MATCH_LABEL: Record<(typeof WATCHLIST_NAMES)[number], string> = {
-  'Manchester Cash-Flow BTL': '4 new matches today',
-  'Leeds Regeneration Corridor': '1 new match today',
-  'Sub-£150k BRRR Candidates': 'No new matches',
-};
 
 // Guards against undefined/non-number input — a saved property's `data` is
 // whatever an /api/analyze response looked like at the time it was saved,
@@ -39,20 +27,40 @@ function fmtPrice(n: number | undefined | null): string {
   return typeof n === 'number' ? '£' + n.toLocaleString('en-GB') : '—';
 }
 
+function parseCriteria(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((c) => c.trim())
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
 export default function SavedPage() {
   const { user, updatePrefs } = useAuth();
   const [savedProperties, setSavedProperties] = useState<api.SavedPropertyRow[]>([]);
-  const [watchlistMatches, setWatchlistMatches] = useState<Record<string, WatchlistMatch[]>>({});
-  const [wlMsg, setWlMsg] = useState<Record<string, string>>({});
+  const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
   const [loadError, setLoadError] = useState('');
+
+  const [creatingNew, setCreatingNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newCriteria, setNewCriteria] = useState('');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCriteria, setEditCriteria] = useState('');
+  const [wlMsg, setWlMsg] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+
+  function loadWatchlists() {
+    return api.listWatchlists().then(setWatchlists);
+  }
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([api.listSaved(), api.listWatchlists()])
-      .then(([saved, watchlists]) => {
+      .then(([saved, lists]) => {
         if (cancelled) return;
         setSavedProperties(saved);
-        setWatchlistMatches(watchlists);
+        setWatchlists(lists);
       })
       .catch((err) => {
         if (!cancelled) setLoadError(err instanceof Error ? err.message : 'Could not load your saved properties.');
@@ -84,9 +92,7 @@ export default function SavedPage() {
     });
   }
 
-  function handleWatchlistStub(action: 'new' | string) {
-    const key = action === 'new' ? 'new' : action;
-    const label = action === 'new' ? "Watchlist builder isn't wired up yet" : "Editing isn't wired up yet";
+  function flashMsg(key: string, label: string) {
     setWlMsg((prev) => ({ ...prev, [key]: label }));
     setTimeout(() => {
       setWlMsg((prev) => {
@@ -94,7 +100,58 @@ export default function SavedPage() {
         delete next[key];
         return next;
       });
-    }, 2200);
+    }, 2600);
+  }
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim() || saving) return;
+    setSaving(true);
+    try {
+      await api.createWatchlist(newName.trim(), parseCriteria(newCriteria));
+      await loadWatchlists();
+      setCreatingNew(false);
+      setNewName('');
+      setNewCriteria('');
+    } catch (err) {
+      flashMsg('new', err instanceof api.ApiError && err.code === 'duplicate_name'
+        ? 'You already have a watchlist with that name.'
+        : 'Could not create that watchlist.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function startEdit(w: Watchlist) {
+    setEditingId(w.id);
+    setEditName(w.name);
+    setEditCriteria(w.criteria.join(', '));
+  }
+
+  async function handleUpdate(e: React.FormEvent, id: number) {
+    e.preventDefault();
+    if (!editName.trim() || saving) return;
+    setSaving(true);
+    try {
+      await api.updateWatchlist(id, { name: editName.trim(), criteria: parseCriteria(editCriteria) });
+      await loadWatchlists();
+      setEditingId(null);
+    } catch (err) {
+      flashMsg(String(id), err instanceof api.ApiError && err.code === 'duplicate_name'
+        ? 'You already have a watchlist with that name.'
+        : 'Could not save those changes.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(w: Watchlist) {
+    if (!window.confirm(`Delete "${w.name}"? This also removes its ${w.matches.length} match(es).`)) return;
+    setWatchlists((prev) => prev.filter((x) => x.id !== w.id));
+    api.deleteWatchlist(w.id).catch(() => {
+      flashMsg(String(w.id), 'Could not delete — try again.');
+      loadWatchlists();
+    });
   }
 
   const totalSaved = demoSlugs.length + savedProperties.length;
@@ -201,54 +258,142 @@ export default function SavedPage() {
       </div>
 
       <div className={styles.sectionTitleRow}>
-        <h2>Watchlists (3)</h2>
-        <button type="button" className="btn btn-gold" onClick={() => handleWatchlistStub('new')}>
-          {wlMsg.new || '+ New watchlist'}
+        <h2>Watchlists ({watchlists.length})</h2>
+        <button
+          type="button"
+          className="btn btn-gold"
+          onClick={() => {
+            setCreatingNew((v) => !v);
+            setEditingId(null);
+          }}
+        >
+          {creatingNew ? 'Cancel' : '+ New watchlist'}
         </button>
       </div>
-      <div>
-        {WATCHLIST_NAMES.map((name) => {
-          const matches = watchlistMatches[name] || [];
-          return (
-            <div className={styles.wlRow} key={name}>
-              <div>
-                <div className={styles.wlName}>{name}</div>
-                <div className={styles.wlChips}>
-                  {WATCHLIST_CHIPS[name].map((c) => (
-                    <span className={styles.chip} key={c}>
-                      {c}
-                    </span>
-                  ))}
-                </div>
-                {matches.length > 0 && (
-                  <div className={styles.wlManualMatches}>
-                    {matches.map((m) => (
-                      <Link
-                        key={m.sourceUrl}
-                        className={styles.wlManualMatch}
-                        href={`/analyse?savedUrl=${encodeURIComponent(m.sourceUrl)}`}
-                      >
-                        {m.address}
-                        {typeof m.price === 'number' ? ` · ${fmtPrice(m.price)}` : ''}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className={styles.wlRight}>
-                <span
-                  className={styles.wlMatch}
-                  style={WATCHLIST_STATIC_MATCH_LABEL[name] === 'No new matches' ? { color: 'var(--text-faint)' } : undefined}
-                >
-                  {WATCHLIST_STATIC_MATCH_LABEL[name]}
-                </span>
-                <button type="button" className="btn btn-ghost" onClick={() => handleWatchlistStub(name)}>
-                  {wlMsg[name] || 'Edit'}
-                </button>
-              </div>
+
+      {creatingNew && (
+        <form className={styles.wlForm} onSubmit={handleCreate}>
+          <div className={styles.wlFormRow}>
+            <div className={styles.field}>
+              <label htmlFor="new-wl-name">Name</label>
+              <input
+                id="new-wl-name"
+                type="text"
+                placeholder="e.g. Sheffield Student Lets"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                maxLength={200}
+                autoFocus
+              />
             </div>
-          );
-        })}
+            <div className={styles.field}>
+              <label htmlFor="new-wl-criteria">Criteria (comma-separated)</label>
+              <input
+                id="new-wl-criteria"
+                type="text"
+                placeholder="e.g. Yield > 7%, Under £180k"
+                value={newCriteria}
+                onChange={(e) => setNewCriteria(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className={styles.wlFormActions}>
+            <button type="submit" className="btn btn-gold" disabled={saving || !newName.trim()}>
+              {saving ? 'Creating…' : 'Create watchlist'}
+            </button>
+            {wlMsg.new && <span className={styles.wlFormMsg}>{wlMsg.new}</span>}
+          </div>
+        </form>
+      )}
+
+      <div>
+        {watchlists.map((w) => (
+          <div className={styles.wlRow} key={w.id}>
+            {editingId === w.id ? (
+              <form className={styles.wlForm} style={{ flex: 1 }} onSubmit={(e) => handleUpdate(e, w.id)}>
+                <div className={styles.wlFormRow}>
+                  <div className={styles.field}>
+                    <label htmlFor={`edit-name-${w.id}`}>Name</label>
+                    <input
+                      id={`edit-name-${w.id}`}
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      maxLength={200}
+                      autoFocus
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label htmlFor={`edit-criteria-${w.id}`}>Criteria (comma-separated)</label>
+                    <input
+                      id={`edit-criteria-${w.id}`}
+                      type="text"
+                      value={editCriteria}
+                      onChange={(e) => setEditCriteria(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className={styles.wlFormActions}>
+                  <button type="submit" className="btn btn-gold" disabled={saving || !editName.trim()}>
+                    {saving ? 'Saving…' : 'Save'}
+                  </button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setEditingId(null)}>
+                    Cancel
+                  </button>
+                  {wlMsg[String(w.id)] && <span className={styles.wlFormMsg}>{wlMsg[String(w.id)]}</span>}
+                </div>
+              </form>
+            ) : (
+              <>
+                <div>
+                  <div className={styles.wlName}>{w.name}</div>
+                  <div className={styles.wlChips}>
+                    {w.criteria.length > 0 ? (
+                      w.criteria.map((c) => (
+                        <span className={styles.chip} key={c}>
+                          {c}
+                        </span>
+                      ))
+                    ) : (
+                      <span className={styles.chip}>No criteria set</span>
+                    )}
+                  </div>
+                  {w.matches.length > 0 && (
+                    <div className={styles.wlManualMatches}>
+                      {w.matches.map((m) => (
+                        <Link
+                          key={m.sourceUrl}
+                          className={styles.wlManualMatch}
+                          href={`/analyse?savedUrl=${encodeURIComponent(m.sourceUrl)}`}
+                        >
+                          {m.address}
+                          {typeof m.price === 'number' ? ` · ${fmtPrice(m.price)}` : ''}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className={styles.wlRight}>
+                  <span
+                    className={styles.wlMatch}
+                    style={w.matches.length === 0 ? { color: 'var(--text-faint)' } : undefined}
+                  >
+                    {w.matches.length === 0
+                      ? 'No matches yet'
+                      : `${w.matches.length} match${w.matches.length === 1 ? '' : 'es'}`}
+                  </span>
+                  <button type="button" className="btn btn-ghost" onClick={() => startEdit(w)}>
+                    Edit
+                  </button>
+                  <button type="button" className={styles.pcRemove} onClick={() => handleDelete(w)}>
+                    Delete
+                  </button>
+                  {wlMsg[String(w.id)] && <span className={styles.wlFormMsg}>{wlMsg[String(w.id)]}</span>}
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
     </>
   );

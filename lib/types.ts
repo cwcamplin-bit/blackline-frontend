@@ -114,6 +114,33 @@ export interface WatchlistMatch {
   addedDate: string;
 }
 
+// A user-created watchlist — see the backend's `watchlists` table. `criteria`
+// is a small set of free-text chips the user themselves typed in (e.g.
+// "Yield > 6%"); there's no automated scanning engine behind it yet, so
+// matches are still added one at a time from the Analyse page.
+export interface Watchlist {
+  id: number;
+  name: string;
+  criteria: string[];
+  createdAt: string;
+  matches: WatchlistMatch[];
+}
+
+// A property a user has marked as owned — backs the Portfolio page. Money
+// fields are whole pounds (not pence), matching the rest of this API.
+export interface PortfolioHolding {
+  id: number;
+  address: string;
+  purchasePrice: number;
+  currentValue: number;
+  mortgageBalance: number;
+  monthlyRent: number;
+  monthlyCosts: number;
+  purchasedAt: string | null;
+  sourceUrl: string | null;
+  createdAt: string;
+}
+
 // A logged-in user, as returned by the backend's /api/auth/* routes.
 // `prefs` is a small free-form bag for per-user flags that don't need their
 // own database table — hidden demo cards, saved demo slugs (see

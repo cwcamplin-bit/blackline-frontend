@@ -1,23 +1,58 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { PROPERTIES } from '@/lib/demoProperties';
+import * as api from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { VERDICT_DOT_CLASS } from '@/lib/verdict';
+import type { HistoryEntry, Watchlist } from '@/lib/types';
 import styles from './dashboard.module.css';
 
-// Orphaned from the sidebar nav since Round 6 of the original prototype —
-// still reachable directly, kept unlinked here too pending a decision on
-// whether to delete it or fold its content elsewhere (see the migration
-// roadmap doc).
-const RECENT: { slug: keyof typeof PROPERTIES; area: string }[] = [
-  { slug: 'ashworth', area: 'Manchester M20' },
-  { slug: 'corporation', area: 'Leeds LS1' },
-  { slug: 'kings', area: 'Sheffield S2' },
-  { slug: 'milton', area: 'Nottingham NG7' },
-];
+function fmtMoney(n: number): string {
+  return '£' + Math.round(n).toLocaleString('en-GB');
+}
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
+  const [savedCount, setSavedCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([api.listHistory(), api.listWatchlists(), api.listSaved()])
+      .then(([h, w, s]) => {
+        if (cancelled) return;
+        setHistory(h);
+        setWatchlists(w);
+        setSavedCount(s.length);
+      })
+      .catch(() => {
+        /* stat row / lists below just render empty — no need to surface a
+           separate error banner on what's meant to be a lightweight overview */
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const now = new Date();
+  const analysesThisMonth = history.filter((h) => {
+    const d = new Date(h.analysedDate);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+  const avgConfidence =
+    history.length > 0 ? Math.round(history.reduce((sum, h) => sum + (h.confidence || 0), 0) / history.length) : null;
+  const totalMatches = watchlists.reduce((sum, w) => sum + w.matches.length, 0);
+
+  const recent = history.slice(0, 4);
+  const topWatchlists = [...watchlists].sort((a, b) => b.matches.length - a.matches.length).slice(0, 2);
+
   return (
     <>
       <div className={styles.appHeader}>
@@ -25,27 +60,31 @@ export default function DashboardPage() {
           <span className="el" />
           OVERVIEW
         </div>
-        <h1>Welcome back, Sophie.</h1>
+        <h1>Welcome back{user ? `, ${user.name.split(' ')[0]}` : ''}.</h1>
         <p className={styles.sub}>
-          Here&apos;s what&apos;s happened since you last checked in. Two of your watchlists have new matches today.
+          {loading
+            ? 'Loading your activity…'
+            : totalMatches > 0
+              ? `Here's what's happened recently. ${totalMatches} watchlist match${totalMatches === 1 ? '' : 'es'} waiting for a look.`
+              : "Here's what's happened recently."}
         </p>
       </div>
 
       <div className={styles.statRow}>
         <div className={styles.statCard}>
-          <div className={styles.scNum}>12</div>
+          <div className={styles.scNum}>{analysesThisMonth}</div>
           <div className={styles.scLabel}>Analyses this month</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.scNum}>7</div>
+          <div className={styles.scNum}>{savedCount}</div>
           <div className={styles.scLabel}>Saved properties</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.scNum}>3</div>
+          <div className={styles.scNum}>{watchlists.length}</div>
           <div className={styles.scLabel}>Active watchlists</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.scNum}>81%</div>
+          <div className={styles.scNum}>{avgConfidence != null ? `${avgConfidence}%` : '—'}</div>
           <div className={styles.scLabel}>Avg. confidence</div>
         </div>
       </div>
@@ -67,26 +106,27 @@ export default function DashboardPage() {
             View all →
           </Link>
         </div>
-        {RECENT.map(({ slug, area }) => {
-          const data = PROPERTIES[slug];
-          return (
-            <div className={styles.arow} key={slug}>
-              <span className={clsx(styles.arDot, VERDICT_DOT_CLASS[data.verdict])} />
+        {recent.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: 13.5 }}>
+            Nothing analysed yet — <Link href="/analyse">run your first report →</Link>
+          </p>
+        ) : (
+          recent.map((h) => (
+            <div className={styles.arow} key={h.sourceUrl}>
+              <span className={clsx(styles.arDot, VERDICT_DOT_CLASS[h.verdict])} />
               <div className={styles.arAddr}>
-                {data.address.split(',')[0]}
-                <small>
-                  {area} · £{data.price.toLocaleString('en-GB')}
-                </small>
+                {h.address.split(',')[0]}
+                <small>{fmtMoney(h.price)}</small>
               </div>
               <span className={styles.arMeta}>
-                {data.verdictLabel} · {data.confidence}%
+                {h.verdictLabel} · {h.confidence}%
               </span>
-              <Link href={`/analyse?property=${slug}`} className={styles.arLink}>
+              <Link href={`/analyse?savedUrl=${encodeURIComponent(h.sourceUrl)}`} className={styles.arLink}>
                 View report →
               </Link>
             </div>
-          );
-        })}
+          ))
+        )}
       </div>
 
       <div className={styles.panelBlock}>
@@ -96,20 +136,27 @@ export default function DashboardPage() {
             Manage watchlists →
           </Link>
         </div>
-        <div className={styles.wlRow} style={{ marginBottom: 12 }}>
-          <div>
-            <div className={styles.wlName}>Manchester Cash-Flow BTL</div>
-            <span className={styles.chip}>Yield &gt; 6%</span> <span className={styles.chip}>Under £250k</span>
-          </div>
-          <span className={styles.wlMatch}>4 new matches today</span>
-        </div>
-        <div className={styles.wlRow}>
-          <div>
-            <div className={styles.wlName}>Leeds Regeneration Corridor</div>
-            <span className={styles.chip}>Growth focus</span> <span className={styles.chip}>3+ bed</span>
-          </div>
-          <span className={styles.wlMatch}>1 new match today</span>
-        </div>
+        {topWatchlists.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: 13.5 }}>
+            No watchlists yet — <Link href="/saved">create one →</Link>
+          </p>
+        ) : (
+          topWatchlists.map((w, i) => (
+            <div className={styles.wlRow} style={i === 0 ? { marginBottom: 12 } : undefined} key={w.id}>
+              <div>
+                <div className={styles.wlName}>{w.name}</div>
+                {w.criteria.map((c) => (
+                  <span className={styles.chip} key={c}>
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <span className={styles.wlMatch} style={w.matches.length === 0 ? { color: 'var(--text-faint)' } : undefined}>
+                {w.matches.length === 0 ? 'No matches yet' : `${w.matches.length} match${w.matches.length === 1 ? '' : 'es'}`}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </>
   );
