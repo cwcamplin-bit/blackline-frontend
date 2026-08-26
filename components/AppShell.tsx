@@ -19,6 +19,8 @@ const NAV_ITEMS = [
   { href: '/analyse', label: 'Analyse' },
   { href: '/history', label: 'History' },
   { href: '/saved', label: 'Saved & Watchlists' },
+  { href: '/compare', label: 'Compare' },
+  { href: '/offers', label: 'Offers' },
   { href: '/portfolio', label: 'Portfolio' },
 ];
 

@@ -216,6 +216,22 @@ function AnalysePageInner() {
     }
   }
 
+  async function handleTrackOffer() {
+    if (!currentData) return;
+    if (!user) {
+      setActionMsg('Log in to track an offer on this property.');
+      return;
+    }
+    try {
+      // Idempotent on the backend — clicking this again for the same
+      // property just finds the existing offer rather than duplicating it.
+      await api.trackOffer(currentData.sourceUrl, currentData.address, currentData.price);
+      setActionMsg('Now tracking an offer on this property — manage its status on your Offers page.');
+    } catch (err) {
+      setActionMsg(err instanceof Error ? err.message : 'Could not track an offer on this property. Please try again.');
+    }
+  }
+
   function handleExport() {
     if (!currentData) return;
     const html = buildPrintableReport(currentData);
@@ -294,6 +310,9 @@ function AnalysePageInner() {
               </button>
               <button type="button" className="btn btn-ghost" onClick={handleWatchClick}>
                 Add to watchlist
+              </button>
+              <button type="button" className="btn btn-ghost" onClick={handleTrackOffer}>
+                Track offer
               </button>
               <button type="button" className="btn btn-gold" onClick={handleExport}>
                 Export report

@@ -290,6 +290,36 @@ export async function deletePortfolioHolding(id: number): Promise<void> {
   await apiRequest<{ ok: boolean }>(`/api/portfolio/${id}`, { method: 'DELETE' });
 }
 
+/* ---------- Offers ---------- */
+
+export async function listOffers(): Promise<import('./types').Offer[]> {
+  return apiRequest<import('./types').Offer[]>('/api/offers');
+}
+
+// Idempotent — tracking the same sourceUrl twice returns the existing offer
+// rather than creating a duplicate (see the backend's UNIQUE constraint).
+export async function trackOffer(
+  sourceUrl: string,
+  address: string,
+  price: number | null
+): Promise<import('./types').Offer> {
+  return apiRequest<import('./types').Offer>('/api/offers', {
+    method: 'POST',
+    body: { sourceUrl, address, price },
+  });
+}
+
+export async function updateOffer(
+  id: number,
+  changes: { offerAmount?: number | null; status?: import('./types').OfferStatus; notes?: string }
+): Promise<import('./types').Offer> {
+  return apiRequest<import('./types').Offer>(`/api/offers/${id}`, { method: 'PATCH', body: changes });
+}
+
+export async function deleteOffer(id: number): Promise<void> {
+  await apiRequest<{ ok: boolean }>(`/api/offers/${id}`, { method: 'DELETE' });
+}
+
 /* ---------- Billing (Stripe subscriptions) ----------
  * Both calls return a Stripe-hosted URL to redirect the browser to — this
  * app never touches card details itself. `window.location.origin` is used

@@ -1,0 +1,168 @@
+.appHeader {
+  margin-bottom: 32px;
+}
+.appHeader h1 {
+  font-size: clamp(26px, 3.4vw, 36px);
+  margin-top: 6px;
+}
+.sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 10px;
+  max-width: 580px;
+}
+
+.panelBlock {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 28px;
+}
+.panelBlock h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.offerRow {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 20px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.offerRow:last-child {
+  margin-bottom: 0;
+}
+.offerMain {
+  max-width: 480px;
+}
+.offerAddr {
+  font-family: var(--serif);
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.offerMeta {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.offerNotes {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.offerRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.offerLink {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--gold);
+  text-decoration: none;
+}
+.offerLink:hover {
+  color: var(--gold-bright);
+}
+.offerRemove {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.offerRemove:hover {
+  color: var(--red);
+}
+
+.statusPill {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: inline-block;
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+}
+.statusPill.neutral {
+  border-color: var(--text-faint);
+  color: var(--text-muted);
+}
+.statusPill.active {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.statusPill.warn {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.statusPill.good {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.statusPill.bad {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.editForm {
+  flex: 1;
+}
+.editFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .editFormGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  padding: 11px 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--gold);
+}
+.editFormActions {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}

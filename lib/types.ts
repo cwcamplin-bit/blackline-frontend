@@ -141,6 +141,22 @@ export interface PortfolioHolding {
   createdAt: string;
 }
 
+export type OfferStatus = 'considering' | 'offered' | 'countered' | 'accepted' | 'rejected' | 'withdrawn';
+
+// An offer tracked on a property, between "saved/analysed it" and "own it"
+// (PortfolioHolding above).
+export interface Offer {
+  id: number;
+  sourceUrl: string;
+  address: string;
+  price: number | null;
+  offerAmount: number | null;
+  status: OfferStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // A logged-in user, as returned by the backend's /api/auth/* routes.
 // `prefs` is a small free-form bag for per-user flags that don't need their
 // own database table — hidden demo cards, saved demo slugs (see
