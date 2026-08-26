@@ -430,3 +430,28 @@ export default function LandingPage() {
               <div className={styles.wordmark}>
                 BLACK<span className={styles.lined}>LINE</span>
               </div>
+              <p>The AI Operating System for Property Investors.</p>
+            </div>
+            <div className={styles.footLinks}>
+              <div className={styles.footCol}>
+                <h4>Product</h4>
+                <a href="#pipeline">How it works</a>
+                <a href="#engine">Intelligence Engine</a>
+                <a href="#report">The Report</a>
+              </div>
+              <div className={styles.footCol}>
+                <h4>Company</h4>
+                <a href="#pricing">Pricing</a>
+                <a href="#cta">Get access</a>
+              </div>
+            </div>
+          </div>
+          <div className={styles.footBottom}>
+            <span>Empowering every property investor to make faster, smarter and more profitable decisions through trusted AI.</span>
+            <span>© 2026 Blackline</span>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+}
