@@ -6,7 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
-import { ApiError, createBillingPortalSession, type PlanId } from '@/lib/api';
+import { ApiError, createBillingPortalSession, getUsage, resendVerification, type PlanId } from '@/lib/api';
+import type { UsageInfo } from '@/lib/types';
 import styles from './account.module.css';
 
 const PLAN_LABELS: Record<string, string> = { free: 'Free', pro: 'Pro', professional: 'Professional' };
@@ -83,6 +84,10 @@ function AccountPageContent() {
   const [billingError, setBillingError] = useState('');
   const [showUpgradeNotice, setShowUpgradeNotice] = useState(false);
 
+  const [usage, setUsage] = useState<UsageInfo | null>(null);
+  const [resendMsg, setResendMsg] = useState('');
+  const [resendBusy, setResendBusy] = useState(false);
+
   const [fullName, setFullName] = useState(user?.name || '');
   const [profileMsg, setProfileMsg] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -115,6 +120,39 @@ function AccountPageContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // Backs the usage bar in the Plan panel below — was a static 60%-filled
+  // placeholder before /api/usage existed. Only meaningful on the Free
+  // plan (a paid plan is unlimited, see the JSX below), but fetched
+  // whenever there's a user regardless, so it's ready the moment someone
+  // downgrades back to Free without needing a full page reload.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getUsage()
+      .then((u) => {
+        if (!cancelled) setUsage(u);
+      })
+      .catch(() => {
+        /* non-critical — the usage bar just falls back to its static copy below */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  async function handleResendVerification() {
+    setResendBusy(true);
+    setResendMsg('');
+    try {
+      await resendVerification();
+      setResendMsg('Verification email sent — check your inbox.');
+    } catch (err) {
+      setResendMsg(err instanceof Error ? err.message : 'Could not send that email. Please try again.');
+    } finally {
+      setResendBusy(false);
+    }
+  }
 
   async function handleManageBilling() {
     setBillingError('');
@@ -204,6 +242,22 @@ function AccountPageContent() {
         <h1>Account settings.</h1>
         <p className={styles.sub}>Manage your profile, password and plan.</p>
       </div>
+
+      {user && !user.emailVerified && (
+        <div className={styles.planNotice}>
+          Verify your email address ({user.email}) to make sure you can recover your account.{' '}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ marginLeft: 10 }}
+            onClick={handleResendVerification}
+            disabled={resendBusy}
+          >
+            {resendBusy ? 'Sending…' : 'Resend verification email'}
+          </button>
+          {resendMsg && <div className={styles.phSub} style={{ marginTop: 8 }}>{resendMsg}</div>}
+        </div>
+      )}
 
       <div className={styles.panelBlock}>
         <h2>Profile</h2>
@@ -348,9 +402,21 @@ function AccountPageContent() {
             {user?.plan === 'free' ? (
               <div className={styles.planUsage}>
                 <div className={styles.usageTrack}>
-                  <div className={styles.usageFill} />
+                  <div
+                    className={styles.usageFill}
+                    style={{
+                      width:
+                        usage && usage.limit
+                          ? `${Math.min(100, Math.round((usage.used / usage.limit) * 100))}%`
+                          : '0%',
+                    }}
+                  />
                 </div>
-                <div className={styles.usageLabel}>Up to 5 free analyses a day — no account needed to run one</div>
+                <div className={styles.usageLabel}>
+                  {usage && usage.limit != null
+                    ? `${usage.used}/${usage.limit} analyses used today`
+                    : 'Up to 5 free analyses a day'}
+                </div>
               </div>
             ) : (
               <div className={styles.planUnlimited}>Unlimited property analyses</div>

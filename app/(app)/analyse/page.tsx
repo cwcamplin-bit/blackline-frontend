@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
 import * as api from '@/lib/api';
+import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { readPrefs, addSavedDemoSlug } from '@/lib/authPrefs';
 import { findDemoSlugBySourceUrl, PROPERTIES, type DemoSlug } from '@/lib/demoProperties';
@@ -40,6 +41,7 @@ function AnalysePageInner() {
   const [confWidth, setConfWidth] = useState('0%');
   const [actionMsg, setActionMsg] = useState('');
   const [wlPickerOpen, setWlPickerOpen] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
 
   const reportRef = useRef<HTMLDivElement>(null);
   const wlPickerRef = useRef<HTMLDivElement>(null);
@@ -130,6 +132,7 @@ function AnalysePageInner() {
     }
     setUrlNoteError(false);
     setUrlNote('Works with Rightmove listings today, Zoopla next.');
+    setQuotaExceeded(false);
     setCurrentData(null);
     setLoading(true);
     setSkNote('Extracting data · running financial engine · gathering market intelligence…');
@@ -152,7 +155,12 @@ function AnalysePageInner() {
       setTimeout(() => reportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     } catch (err) {
       setUrlNoteError(true);
-      setUrlNote(err instanceof Error ? err.message : 'Something went wrong analysing that listing.');
+      if (err instanceof ApiError && err.status === 429 && err.code === 'quota_exceeded') {
+        setQuotaExceeded(true);
+        setUrlNote(err.message);
+      } else {
+        setUrlNote(err instanceof Error ? err.message : 'Something went wrong analysing that listing.');
+      }
     } finally {
       clearTimeout(coldStartTimer);
       setLoading(false);
@@ -244,6 +252,13 @@ function AnalysePageInner() {
         </button>
       </div>
       <div className={clsx(styles.heroNote, urlNoteError && styles.error)}>{urlNote}</div>
+      {quotaExceeded && (
+        <div style={{ marginTop: 10 }}>
+          <Link href="/plans" className="btn btn-gold">
+            Upgrade to Pro →
+          </Link>
+        </div>
+      )}
 
       {loading && (
         <div className={styles.skeletonBlock}>

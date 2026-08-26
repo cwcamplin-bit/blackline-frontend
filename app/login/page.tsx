@@ -52,12 +52,6 @@ function LoginPageInner() {
     }
   }
 
-  function handleForgot(e: React.MouseEvent) {
-    e.preventDefault();
-    setError(false);
-    setMsg("Password reset isn't wired up in this prototype yet.");
-  }
-
   return (
     <AuthLayout
       accent="gold"
@@ -127,9 +121,9 @@ function LoginPageInner() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="button" className={s.forgot} onClick={handleForgot}>
+          <Link href="/forgot-password" className={s.forgot}>
             Forgot?
-          </button>
+          </Link>
         </div>
         <button type="submit" className={s.authSubmit} disabled={submitting}>
           {submitting ? 'Logging in…' : 'Log in →'}

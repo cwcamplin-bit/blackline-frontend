@@ -1,4 +1,4 @@
-import type { AnalysisResult, AuthResult, UserPublic } from './types';
+import type { AnalysisResult, AuthResult, UsageInfo, UserPublic } from './types';
 
 // Deployed permanently on Render (see the backend repo's README). Override
 // by setting NEXT_PUBLIC_BLACKLINE_API_BASE at build time if you ever need
@@ -35,8 +35,13 @@ export async function analyseProperty(url: string): Promise<AnalysisResult> {
   }
   const body = await res.json().catch(() => null);
   if (!res.ok) {
+    const code = (body && body.error) || 'request_failed';
     const detail = body && body.detail ? body.detail : `Request failed (HTTP ${res.status}).`;
-    throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
+    // A typed ApiError (not a plain Error) so callers can branch on
+    // `err.status`/`err.code` — the Analyse page uses this to show an
+    // "Upgrade to Pro" prompt specifically for a 429 quota_exceeded
+    // response, rather than just displaying the message text.
+    throw new ApiError(res.status, code, typeof detail === 'string' ? detail : JSON.stringify(detail));
   }
   return body as AnalysisResult;
 }
@@ -156,6 +161,34 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
 export async function updatePrefs(prefs: Record<string, unknown>): Promise<void> {
   await apiRequest<{ ok: boolean }>('/api/auth/prefs', { method: 'PATCH', body: { prefs } });
+}
+
+/* ---------- Email verification & password reset ---------- */
+
+export async function verifyEmail(token: string): Promise<void> {
+  await apiRequest<{ ok: boolean }>('/api/auth/verify-email', { method: 'POST', body: { token }, auth: false });
+}
+
+export async function resendVerification(): Promise<void> {
+  await apiRequest<{ ok: boolean }>('/api/auth/resend-verification', { method: 'POST' });
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await apiRequest<{ ok: boolean }>('/api/auth/forgot-password', { method: 'POST', body: { email }, auth: false });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await apiRequest<{ ok: boolean }>('/api/auth/reset-password', {
+    method: 'POST',
+    body: { token, newPassword },
+    auth: false,
+  });
+}
+
+/* ---------- Free tier usage ---------- */
+
+export async function getUsage(): Promise<UsageInfo> {
+  return apiRequest<UsageInfo>('/api/usage');
 }
 
 /* ---------- Saved properties ---------- */

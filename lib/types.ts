@@ -131,10 +131,26 @@ export interface UserPublic {
   // is on. Null on the Free plan or once fully canceled, same as
   // subscriptionStatus above.
   subscriptionInterval: string | null;
+  // True once the account has clicked the link in its verification email.
+  // Not currently enforced anywhere (an unverified account can do
+  // everything a verified one can) — see the Account page's verify-email
+  // banner and the backend README's "Email (Resend)" section.
+  emailVerified: boolean;
   prefs: Record<string, unknown>;
 }
 
 export interface AuthResult {
   token: string;
   user: UserPublic;
+}
+
+// Returned by GET /api/usage — lets the Account page show real numbers
+// against the Free tier's daily analysis cap instead of a static
+// placeholder. `limit`/`remaining` are null when `unlimited` is true.
+export interface UsageInfo {
+  plan: string;
+  unlimited: boolean;
+  used: number;
+  limit: number | null;
+  remaining: number | null;
 }
