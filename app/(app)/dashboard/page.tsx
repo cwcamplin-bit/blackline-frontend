@@ -132,13 +132,13 @@ export default function DashboardPage() {
       <div className={styles.panelBlock}>
         <div className={styles.panelTitleRow}>
           <h2>Watchlist activity</h2>
-          <Link href="/saved" className={styles.viewAll}>
+          <Link href="/watchlists" className={styles.viewAll}>
             Manage watchlists →
           </Link>
         </div>
         {topWatchlists.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', fontSize: 13.5 }}>
-            No watchlists yet — <Link href="/saved">create one →</Link>
+            No watchlists yet — <Link href="/watchlists">create one →</Link>
           </p>
         ) : (
           topWatchlists.map((w, i) => (

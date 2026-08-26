@@ -179,7 +179,7 @@ function AnalysePageInner() {
       } else if (currentData) {
         await api.saveProperty(currentData.sourceUrl, currentData);
       }
-      setActionMsg('Saved — it now appears on your Saved & Watchlists page.');
+      setActionMsg('Saved — it now appears on your Saved page.');
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : 'Could not save this property. Please try again.');
     }
@@ -195,7 +195,7 @@ function AnalysePageInner() {
     const opening = !wlPickerOpen;
     setWlPickerOpen(opening);
     if (opening) {
-      // Watchlists are user-created (Saved & Watchlists page) rather than a
+      // Watchlists are user-created (Watchlists page) rather than a
       // fixed list, so this is fetched fresh each time the picker opens
       // instead of read from a hardcoded constant.
       api
@@ -210,7 +210,7 @@ function AnalysePageInner() {
     setWlPickerOpen(false);
     try {
       await api.addWatchlistMatch(name, currentData);
-      setActionMsg(`Added to "${name}" — it now shows on your Saved & Watchlists page.`);
+      setActionMsg(`Added to "${name}" — it now shows on your Watchlists page.`);
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : 'Could not add to that watchlist. Please try again.');
     }
@@ -327,7 +327,7 @@ function AnalysePageInner() {
                       </button>
                     ))
                   ) : (
-                    <Link href="/saved" className={styles.wlPick}>
+                    <Link href="/watchlists" className={styles.wlPick}>
                       No watchlists yet — create one →
                     </Link>
                   )}
